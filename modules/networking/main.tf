@@ -1,13 +1,13 @@
 locals {
-  owner       = "ritesh"
-  module_name = "${var.env}-${local.owner}"
+  owner       = "siva"
+  module_name = "${var.env}-${local.owner}" //it will be like stage-siva/prod-siva depands on env variable
 }
 // TODO break public and private into separate AZs
 data "aws_availability_zones" "available" {}
 
 module "vpc" {
-  source                       = "terraform-aws-modules/vpc/aws"
-  name                         = "${local.module_name}-vpc"
+  source                       = "terraform-aws-modules/vpc/aws" //using published modules taken from "https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest"
+  name                         = "${local.module_name}-vpc" //it will be display as stage-siva-vpc /prod-siva-vpc
   cidr                         = var.cidr
   azs                          = data.aws_availability_zones.available.names
   private_subnets              = var.private_subnets
@@ -19,9 +19,9 @@ module "vpc" {
 
 // SG to allow SSH connections from anywhere
 resource "aws_security_group" "allow_ssh_pub" {
-  name        = "${var.env}-allow_ssh"
+  name        = "${var.env}-allow_ssh" // stage-allow_ssh / prod-allow_ssh
   description = "Allow SSH inbound traffic"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id // it will crreate the vpc id
 
   ingress {
     description = "SSH from the internet"
@@ -39,7 +39,7 @@ resource "aws_security_group" "allow_ssh_pub" {
   }
 
   tags = {
-    Name = "${local.module_name}-allow_ssh_pub"
+    Name = "${local.module_name}-allow_ssh_pub" // stage-siva-allow_ssh_pub / prod-siva-allow_ssh_pub
   }
 }
 
@@ -65,6 +65,6 @@ resource "aws_security_group" "allow_ssh_priv" {
   }
 
   tags = {
-    Name = "${local.module_name}-allow_ssh_priv"
+    Name = "${local.module_name}-allow_ssh_priv" // stage-siva-allow_ssh_priv / prod-siva-allow_ssh_priv
   }
 }

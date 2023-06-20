@@ -1,24 +1,25 @@
 locals {
-  owner       = "ritesh"
+  owner       = "siva"
   module_name = "${var.env}-${local.owner}"
 }
 
 # An IAM role that we attach to the EC2 Instances in the cluster
+
 resource "aws_iam_role" "ec2_instance" {
-  name               = "${local.module_name}-ec2-instance"
-  assume_role_policy = file("${path.module}/policies/ec2-instance.json")
+  name               = "${local.module_name}-ec2-instance" //stage-siva-ec2-instance or prod-siva-ec2-instance
+  assume_role_policy = file("${path.module}/policies/ec2-instance.json") //getting teh path from the polics folder
 
   lifecycle { create_before_destroy = true }
 }
 
-resource "aws_iam_instance_profile" "ec2_instance" {
+resource "aws_iam_instance_profile" "ec2_instance" { //creating teh instance profile by using the created role
   name = "${local.module_name}-ec2-instance"
-  role = aws_iam_role.ec2_instance.name
+  role = aws_iam_role.ec2_instance.name //
   lifecycle { create_before_destroy = true }
 }
 
-resource "aws_iam_role_policy" "ec2_instance_policy" {
-  name   = "${local.module_name}-ec2-instance-policy"
+resource "aws_iam_role_policy" "ec2_instance_policy" { //attaching the policy to the instance profile
+  name   = "${local.module_name}-ec2-instance-policy" 
   role   = aws_iam_role.ec2_instance.id
   policy = file("${path.module}/policies/ec2-instance-policy.json")
 
@@ -37,19 +38,21 @@ data "aws_ami" "amazon-linux-2" {
 }
 
 data "template_file" "default_user_data" {
-  template = file("${path.module}/user-data/user-data.tpl")
+  template = file("${path.module}/user-data/user-data.tpl") //fetching the user data from the user data folder
 }
 
 // Configure the EC2 instance in a public subnet
+
+
 module "frontend_instance" {
-  source                      = "terraform-aws-modules/ec2-instance/aws"
+  source                      = "terraform-aws-modules/ec2-instance/aws" //we are reffering the published module from terraform registry
   name                        = "${local.module_name}-frontend"
-  ami                         = data.aws_ami.amazon-linux-2.id
+  ami                         = data.aws_ami.amazon-linux-2.id //fetching teh data from above data block
   associate_public_ip_address = true
-  instance_type               = var.frontend_instance_type
+  instance_type               = var.frontend_instance_type 
   key_name                    = var.key_name
-  user_data                   = data.template_file.default_user_data.rendered
-  subnet_id                   = var.vpc.public_subnets[0]
+  user_data                   = data.template_file.default_user_data.rendered //fetching teh data from above data block 
+  subnet_id                   = var.vpc.public_subnets[0] //fetching the valus from the variable file of networking module private subnet list values
   vpc_security_group_ids      = [var.sg_pub_id]
   iam_instance_profile        = aws_iam_instance_profile.ec2_instance.name
 
@@ -66,6 +69,8 @@ module "frontend_instance" {
   }
 }
 
+
+
 // Configure the EC2 instance in a private subnet
 module "backend_server" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
@@ -75,7 +80,7 @@ module "backend_server" {
   instance_type               = var.backend_instance_type
   key_name                    = var.key_name
   user_data                   = data.template_file.default_user_data.rendered
-  subnet_id                   = var.vpc.private_subnets[1]
+  subnet_id                   = var.vpc.private_subnets[1] //fetching the valus from the variable file of networking module private subnet list values
   vpc_security_group_ids      = [var.sg_priv_id]
   iam_instance_profile        = aws_iam_instance_profile.ec2_instance.name
 

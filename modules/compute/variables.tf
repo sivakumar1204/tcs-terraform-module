@@ -20,10 +20,12 @@ variable "sg_priv_id" {
   default = {}
 }
 
+
 variable "frontend_instance_type" {
   type    = string
   default = null
 }
+
 
 variable "backend_instance_type" {
   type    = string

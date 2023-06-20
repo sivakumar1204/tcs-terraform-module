@@ -1,34 +1,34 @@
 locals {
-  owner        = "ritesh"
-  module_name  = "${var.env}-${local.owner}"
-  ssh_key_pair = "ritesh-devops"
+  owner        = "siva"
+  module_name  = "${var.env}-${local.owner}" //prod-siva
+  ssh_key_pair = "siva-devops-terraform-sfjbs" //key pair created manually
 }
 
 module "networking" {
-  source          = "../modules/networking"
-  env             = var.env
-  cidr            = var.cidr
-  private_subnets = var.private_subnets
-  public_subnets  = var.public_subnets
+  source          = "C:/Users/sivar/Desktop/KPLabs-Terraform/TCS/tcs-terraform-modules/modules/networking"
+  env             = var.env //fetch the values from the prod--->veriables.tf file
+  cidr            = var.cidr //fetch the values from the prod--->veriables.tf file
+  private_subnets = var.private_subnets //fetch the values from the prod--->veriables.tf file
+  public_subnets  = var.public_subnets //fetch the values from the prod--->veriables.tf file
 }
 
 module "compute" {
-  source                 = "../modules/compute"
-  env                    = var.env
-  vpc                    = module.networking.vpc
-  sg_pub_id              = module.networking.sg_pub_id
-  sg_priv_id             = module.networking.sg_priv_id
-  key_name               = local.ssh_key_pair
-  frontend_instance_type = var.frontend_instance_type
-  backend_instance_type  = var.backend_instance_type
-  volume_size            = var.volume_size
+  source                 = "C:/Users/sivar/Desktop/KPLabs-Terraform/TCS/tcs-terraform-modules/modules/compute"
+  env                    = var.env //fetch the values from the prod--->veriables.tf file
+  vpc                    = module.networking.vpc //fetch the values from the modules networking--->main.tf file
+  sg_pub_id              = module.networking.sg_pub_id //fetch the values from the modules networking--->output.tf file
+  sg_priv_id             = module.networking.sg_priv_id //fetch the values from the modules networking--->output.tf file
+  key_name               = local.ssh_key_pair //fetching the value from above local file
+  frontend_instance_type = var.frontend_instance_type //fetch the values from the prod--->veriables.tf file
+  backend_instance_type  = var.backend_instance_type //fetch the values from the prod--->veriables.tf file
+  volume_size            = var.volume_size //fetch the values from the prod--->veriables.tf file
 }
 
 module "security" {
-  source = "../modules/security"
+  source = "C:/Users/sivar/Desktop/KPLabs-Terraform/TCS/tcs-terraform-modules/modules/security"
 
-  vpc_id          = module.networking.vpc.vpc_id
-  vpc_cidr_block  = var.cidr
-  ssh_allowed_ips = var.ssh_allowed_ips
-  env             = var.env
+  vpc_id          = module.networking.vpc.vpc_id //fetch the values from the modules networking--->output.tf file
+  vpc_cidr_block  = var.cidr //fetch the values from the prod--->veriables.tf file
+  ssh_allowed_ips = var.ssh_allowed_ips //fetch the values from the prod--->veriables.tf file
+  env             = var.env //fetch the values from the prod--->veriables.tf file
 }

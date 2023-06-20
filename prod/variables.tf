@@ -5,7 +5,7 @@ variable "env" {
 
 variable "region" {
   description = "AWS region"
-  default     = "us-west-1"
+  default     = "ap-south-1"
   type        = string
 }
 
@@ -21,7 +21,7 @@ variable "backend_instance_type" {
 
 variable "ssh_key_pair" {
   type    = string
-  default = ""
+  default = "siva-devops-terraform-sfjbs" //it you are not providing the key pair in main.tf it will be fetch from here
 }
 
 variable "volume_size" {

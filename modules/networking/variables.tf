@@ -1,5 +1,11 @@
 variable "env" {}
 
+/*
+
+if we are not defining any variable paramters in the root module section than by defaulty mentioned valus will be taken for that calling root variable parameters
+
+*/
+
 variable "cidr" {
   type    = string
   default = "10.1.0.0/16"
